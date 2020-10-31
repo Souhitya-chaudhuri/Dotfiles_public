@@ -1,0 +1,54 @@
+-----------------------------------------------------------------------
+====FIRST COLOUR PALETTE FOR MY MANJARO RICING
+-----------------------------------------------------------------------
+
+====Blacks/browns
+
+#0a1b21 -oxford black[normal]
+#250001 -darck reddish brown[bright]
+#08131b -rich black fogra 29[dark]
+
+
+====Reds
+
+#ad2e0b -vermilion(dark)[normal]
+#e6070b -red[bright]
+#871d08 -chinese red[dark]
+
+
+====Greens
+
+#0a8754 -medium green[normal]
+#96f467 -light green[bright]
+#004f2d -Dark green[dark]
+
+
+====Blues
+
+#0030a4 -blue[normal]
+#317de5 -blue[bright]
+#001427 -blue[dark]
+
+
+====Yellows
+
+#f5ab00 -medium yellow[normal]
+#f8f991 -canary yellow[bright]
+#cd7836 -yellow[dark]
+
+====magenta
+
+#ff335c -magenta[normal]
+#ff7008 -magenta[bright]
+#ce185e -magenta[dark]
+
+====cyan
+
+#ade8f4 -cyan[normal]
+#caf0f8 -cyan[bright]
+#48cae4 -cyan[dark]
+
+
+====white
+
+#edf2f4 -white
