@@ -1,115 +1,121 @@
---This config file store most of my personal xmonad perferences of which the deviations from the default config has been marked by a comment and a date of the last change 
+--This config file stores most of my personal xmonad perferences
 
 import XMonad
 import Data.Monoid
 import System.Exit
---import System.IO
---3 modules reqired to run xmproc, spawnOnce, avoid struts in getting a dock(set up)
+import System.IO
 import XMonad.Util.SpawnOnce
 import XMonad.Util.Run
 import XMonad.Hooks.ManageDocks
 import XMonad.Layout.Spacing
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.Grid
-import XMonad.Hooks.ManageHelpers 
+import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.DynamicLog
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
+import XMonad.ManageHook
+import XMonad.Util.NamedScratchpad
 
-myTerminal      = "alacritty" --my default terminal emulator for now is alacritty [20/7/2020]
+myTerminal      = "alacritty"
+myTerminal2      = "st"
 
--- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 
--- Whether clicking on a window to focus also passes the click to the window
 myClickJustFocuses :: Bool
 myClickJustFocuses = False
 
-myBorderWidth   = 2 
+myBorderWidth   = 2
 
-myModMask       = mod4Mask --Always change the mod mask to 4 [20/7/2020]
+myModMask       = mod4Mask --Always change the mod mask to 4
 
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 
-myNormalBorderColor  = "#250001"
+-- myNormalBorderColor  = "#250001"
 myFocusedBorderColor = "#ad2e0b"
+myNormalBorderColor  = "#10131a"
+-- myFocusedBorderColor = "#e6f9e6"
+-- myFocusedBorderColor = "#99ffbb"
+-- myFocusedBorderColor = "#f9c74f"
 
 ------------------------------------------------------------------------
--- Key bindings. Add, modify or remove key bindings here.
 --
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
+
+    -- ================================================================================================================
+    -- Required by the system
+    -- ================================================================================================================
 
     -- launch a terminal
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
-    -- launch dmenu
-    --, ((modm,               xK_p     ), spawn "dmenu_run -c -l 20")
-    , ((modm,               xK_p     ), spawn "dmenu_run")
-    --, ((modm,               xK_p     ), spawn "rofi -show run")
-
-    -- launch gmrun
-    , ((modm .|. shiftMask, xK_p     ), spawn "gmrun")
-
-    -- close focused window
-    , ((modm .|. shiftMask, xK_c     ), kill)
-
-     -- Rotate through the available layout algorithms
-    , ((modm,               xK_space ), sendMessage NextLayout)
-
-    --  Reset the layouts on the current workspace to default
-    , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
-
-    -- Resize viewed windows to the correct size
-    , ((modm,               xK_n     ), refresh)
-
-    -- Move focus to the next window
-    , ((modm,               xK_Tab   ), windows W.focusDown)
-
-    -- Move focus to the next window
-    , ((modm,               xK_j     ), windows W.focusDown)
-
-    -- Move focus to the previous window
-    , ((modm,               xK_k     ), windows W.focusUp  )
-
-    -- Move focus to the master window
-    , ((modm,               xK_m     ), windows W.focusMaster  )
-
     -- Swap the focused window and the master window
     , ((modm,               xK_Return), windows W.swapMaster)
-
-    -- Swap the focused window with the next window
-    , ((modm .|. shiftMask, xK_j     ), windows W.swapDown  )
-
-    -- Swap the focused window with the previous window
-    , ((modm .|. shiftMask, xK_k     ), windows W.swapUp    )
-
+    -- Rotate through the available layout algorithms
+    , ((modm,               xK_space ), sendMessage NextLayout)
+    --  Reset the layouts on the current workspace to default
+    , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
+    -- Move focus to the next window
+    , ((modm,               xK_Tab   ), windows W.focusDown)
+    -- Increment the number of windows in the master area
+    , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
+    -- Deincrement the number of windows in the master area
+    , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
+    -- Toggle the status bar gap
+    , ((modm              , xK_b     ), sendMessage ToggleStruts)
+    -- close focused window
+    , ((modm .|. shiftMask, xK_c     ), kill)
     -- Shrink the master area
     , ((modm,               xK_h     ), sendMessage Shrink)
-
+    -- Swap the focused window with the next window
+    , ((modm .|. shiftMask, xK_j     ), windows W.swapDown  )
+    -- Move focus to the next window
+    , ((modm,               xK_j     ), windows W.focusDown)
+    -- Swap the focused window with the previous window
+    , ((modm .|. shiftMask, xK_k     ), windows W.swapUp    )
+    -- Move focus to the previous window
+    , ((modm,               xK_k     ), windows W.focusUp  )
     -- Expand the master area
     , ((modm,               xK_l     ), sendMessage Expand)
-
+    -- Move focus to the master window
+    , ((modm,               xK_m     ), windows W.focusMaster  )
+    -- Resize viewed windows to the correct size
+    , ((modm,               xK_n     ), refresh)
+    -- Quit xmonad
+    , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
+    -- Restart xmonad
+    , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
     -- Push window back into tiling
     , ((modm,               xK_t     ), withFocused $ windows . W.sink)
 
-    -- Increment the number of windows in the master area
-    , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
+    -- ================================================================================================================
+    -- Made by me
+    -- ================================================================================================================
 
-    -- Deincrement the number of windows in the master area
-    , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
+    -- scratchpads
+    , ((mod1Mask .|. shiftMask,  xK_b     ), namedScratchpadAction myScratchPads "bashtop")
+    , ((mod1Mask .|. shiftMask,  xK_v     ), namedScratchpadAction myScratchPads "vifm")
+    , ((mod1Mask .|. shiftMask,  xK_c     ), namedScratchpadAction myScratchPads "tty-clock")
+    , ((mod1Mask .|. controlMask,  xK_v     ), namedScratchpadAction myScratchPads "volume")
+    , ((mod1Mask .|. shiftMask,  xK_s     ), namedScratchpadAction myScratchPads "Scratchpad")
+    -- launch deadbeef
+    , ((modm,               xK_d     ), spawn "deadbeef")
+    --launch browsers
+    , ((modm .|. shiftMask, xK_f     ), spawn "firefox")
+    , ((modm .|. mod1Mask,  xK_c     ), spawn "google-chrome-stable")
+    -- launch pcmanfm
+    , ((modm .|. shiftMask, xK_p     ), spawn "pcmanfm")
+    -- , ((modm .|. shiftMask, xK_p     ), namedScratchpadAction myScratchPads "terminal")
+    -- launch dmenu
+    --, ((modm,               xK_p     ), spawn "dmenu_run -c -l 20")
+    --, ((modm,               xK_p     ), spawn "dmenu_run")
+    , ((modm,               xK_p     ), spawn "dmenu_run -p \"Application: \"")
+    -- launch systemsettings5
+    , ((modm .|. mod1Mask,  xK_s     ), spawn "systemsettings5")
+    -- launch yakuake
+    , ((modm .|. mod1Mask,  xK_y     ), spawn "yakuake")
 
-    -- Toggle the status bar gap
-    -- Use this binding with avoidStruts from Hooks.ManageDocks.
-    -- See also the statusBar function from Hooks.DynamicLog.
-    --
-    -- , ((modm              , xK_b     ), sendMessage ToggleStruts)
-
-    -- Quit xmonad
-    , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
-
-    -- Restart xmonad
-    , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
 
     -- Run xmessage with a summary of the default keybindings (useful for beginners)
     , ((modm .|. shiftMask, xK_slash ), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
@@ -156,9 +162,9 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 ------------------------------------------------------------------------
 -- Layouts:
 
-myLayout = spacingRaw True (Border 0 4 4 4) True (Border 5 4 4 4) True 
+myLayout = spacingRaw True (Border 0 4 4 4) True (Border 5 4 4 4) True
   $fullscreenFull
-  $avoidStruts(tiled ||| Grid ||| Mirror tiled ||| Full)
+  $avoidStruts(tiled ||| Full ||| Grid ||| Mirror tiled)
   where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
@@ -172,6 +178,50 @@ myLayout = spacingRaw True (Border 0 4 4 4) True (Border 5 4 4 4) True
      -- Percent of screen to increment by when resizing panes
      delta   = 3/100
 
+-----------------------------------------------------------------------
+
+myScratchPads :: [NamedScratchpad]
+myScratchPads = [ NS "bashtop" spawnBashTop findBashTop manageBashTop
+                , NS "vifm" spawnVifm findVifm manageVifm
+                , NS "tty-clock" spawnClock findClock manageClock
+                , NS "volume" spawnVolume findVolume manageVolume
+                , NS "Scratchpad" spawnScratchpad findScratchpad manageScratchpad
+                ]
+  where
+    -- spawnTerm  = myTerminal2 ++ " -n scratchpad 'bash'"
+    spawnBashTop  = myTerminal ++ " -t bashtop -e bashtop "
+    findBashTop   = title =? "bashtop"
+    manageBashTop = customFloating $ W.RationalRect x y w h
+               where
+                 h = 0.9
+                 w = 0.9
+                 y = 0.95 -h
+                 x = 0.95 -w
+
+    spawnScratchpad  = myTerminal2 ++ " -t Scratchpad -e nvim ~/scratchpad.txt "
+    findScratchpad   = title =? "Scratchpad"
+    manageScratchpad = customFloating $ W.RationalRect x y w h
+               where
+                 h = 0.9
+                 w = 0.9
+                 y = 0.95 -h
+                 x = 0.95 -w
+    spawnVifm  = myTerminal ++ " -t vifm -e vifm ~/ ~/JADAVPUR/ "
+    findVifm   = title =? "vifm"
+    manageVifm = customFloating $ W.RationalRect x y w h
+               where
+                 h = 0.9
+                 w = 0.9
+                 y = 0.95 -h
+                 x = 0.95 -w
+    spawnClock  = myTerminal ++ " -t clock -e tty-clock -scbtBC 3 "
+    findClock   = title =? "clock"
+    manageClock = customFloating $ W.RationalRect 0.25 0.25 0.5 0.5
+
+    spawnVolume  = myTerminal ++ " -t volume -e pulsemixer "
+    findVolume   = title =? "volume"
+    manageVolume = customFloating $ W.RationalRect 0.25 0.25 0.5 0.5
+
 ------------------------------------------------------------------------
 -- Window rules:
 -- To find the property name associated with a program, use
@@ -183,63 +233,45 @@ myLayout = spacingRaw True (Border 0 4 4 4) True (Border 5 4 4 4) True
 --
 myManageHook =composeAll
     [ className =? "MPlayer"        --> doFloat
-    , fullscreenManageHook 
-    ,isFullscreen --> doFullFloat
+    , namedScratchpadManageHook myScratchPads
+    , fullscreenManageHook
+    , isFullscreen --> doFullFloat
     , className =? "Gimp"           --> doFloat
     , className =? "yakuake"        --> doFloat
+    -- , className =? "libreoffice"    --> doFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
 
 ------------------------------------------------------------------------
 -- Event handling
-
--- * EwmhDesktops users should change this to ewmhDesktopsEventHook
---
--- Defines a custom handler function for X Events. The function should
--- return (All True) if the default handler is to be run afterwards. To
--- combine event hooks use mappend or mconcat from Data.Monoid.
 --
 myEventHook = fullscreenEventHook
 
 ------------------------------------------------------------------------
 -- Status bars and logging
 
--- Perform an arbitrary action on each internal state change or X event.
--- See the 'XMonad.Hooks.DynamicLog' extension for examples.
-myLogHook = return()
+myLogHook h = dynamicLogWithPP $ def
+    { ppLayout = wrap "(<fc=#e4b63c>" "</fc>)"
+    -- , ppSort = getSortByXineramaRule  -- Sort left/right screens on the left, non-empty workspaces after those
+    , ppTitleSanitize = const ""
+    , ppVisible = wrap "(" ")"
+    , ppCurrent = wrap "<fc=#b8473d>[</fc><fc=#7cac7a>" "</fc><fc=#b8473d>]</fc>"
+    , ppOutput = hPutStrLn h
+    }
 
 ------------------------------------------------------------------------
--- Startup hook
 
--- Perform an arbitrary action each time xmonad starts or is restarted
--- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
--- per-workspace layout choices.
---
---
 myStartupHook = do
   spawnOnce "xset r rate 300 50"
   spawnOnce "nitrogen --restore &"
   spawnOnce "picom --experimental-backends &"
-  --spawnOnce "yakuake &"
+  spawnOnce "conky &"
 
 ------------------------------------------------------------------------
--- Now run xmonad with all the defaults we set up.
 
--- Run xmonad with the settings you specify. No need to modify this.
---
---
 main = do
-  xmproc <- spawnPipe "xmobar /home/souhitya/.config/xmobar/xmobarrc"
-  xmonad $fullscreenSupport $ docks defaults
-
---myLogHook  = dynamicLogWithPP $ xmobarPP { ppOutput = hPutStrLn xmproc }
--- A structure containing your configuration settings, overriding
--- fields in the default config. Any you don't override, will
--- use the defaults defined in xmonad/XMonad/Config.hs
---
--- No need to modify this.
---
-defaults = def {
+  xmproc <- spawnPipe "xmobar -x 0 ~/.config/xmobar/xmobarrc"
+  xmonad $ fullscreenSupport $ docks $ def {
       -- simple stuff
         terminal           = myTerminal,
         focusFollowsMouse  = myFocusFollowsMouse,
@@ -257,10 +289,11 @@ defaults = def {
       -- hooks, layouts
         layoutHook         = myLayout,
         manageHook         = myManageHook,
-        handleEventHook    = myEventHook, 
-        logHook            = myLogHook ,
+        handleEventHook    = myEventHook,
+        logHook            = myLogHook xmproc,
         startupHook        = myStartupHook
     }
+
 
 -- | Finally, a copy of the default bindings in simple textual tabular format.
 help :: String

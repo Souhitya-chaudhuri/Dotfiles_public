@@ -3,14 +3,16 @@
 #
 
 xset r rate 300 50
-export EDITOR='vim'
-export VISUAL='vim'
+export EDITOR='nvim'
+export VISUAL='nvim'
 export TERMINAL="alacritty"
 export BROWSER="firefox"
 
 #sets vim mode with the <escape> key
-
 set -o vi
+
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+# export MANPAGER="nvim -c 'set ft=man' -"
 
 [[ $- != *i* ]] && return
 
@@ -83,7 +85,8 @@ if ${use_color} ; then
 		PS1='\[\033[01;31m\][\h\[\033[01;36m\] \W\[\033[01;31m\]]\$\[\033[00m\] '
 	else
 		#PS1='┌─[\[\e[01;32m\]\u\[\e[00m\]@\[\e[01;32m\]\h\[\e[00m\]:\[\e[1;34m\]\w\[\e[0m\]]\n└─╼ '
-		PS1='\[\033[01;32m\][\u@\h\[\033[01;37m\] \W\[\033[01;32m\]]\$\[\033[00m\] '
+		#PS1='\[\033[01;32m\][\u@\h\[\033[01;37m\] \W\[\033[01;32m\]]\n\$\[\033[00m\] '
+		PS1="┌─\[\e[33m\][\[\e[m\]\[\e[31m\]\u\[\e[m\]@\[\e[36m\]\h\[\e[m\]:\[\e[35m\]\w\[\e[m\]\[\e[33m\]]\[\e[m\] (\$(git branch 2>/dev/null | grep '^*' | colrm 1 2)) \n└─╼\$ "
 	fi
 
 	alias ls='exa -al --color=always --group-directories-first'
@@ -114,6 +117,12 @@ alias cdDp="cd ~/Dotfiles_public"
 alias cdDm="cd ~/dotfiles-main"
 alias ..="cd ../"
 alias fm="vifm"
+alias nvwk="nvim /home/souhitya/vimwiki/index.wiki"
+alias nvjwk="nvim /home/souhitya/JADAVPUR/WIKI/index.wiki"
+alias nv="nvim"
+alias nvc="nvim ~/.config/nvim/init.vim"
+alias cat="bat"
+alias pulmi="pulsemixer"
 
 xhost +local:root > /dev/null 2>&1
 
@@ -158,4 +167,7 @@ ex ()
 }
 
 #neofetch
-#export PATH="$HOME/.emacs.d/bin:$PATH"
+export PATH="$HOME/.emacs.d/bin:$PATH"
+colorscript -e dna
+cal -3
+
