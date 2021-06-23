@@ -11,6 +11,9 @@
 - arc(archiver)
 - bashtop
 - imagemagick (import screenshot tool)
+- flameshot
+- fd
+-
 
 
 * Themes

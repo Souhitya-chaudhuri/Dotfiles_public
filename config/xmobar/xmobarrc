@@ -4,16 +4,18 @@ Config {
     font =         "xft:Iosevka SS04:style=Bold:pixelsize=12:anitalias=true:hinting=true"
    -- font =         "xft:Fira Code:style=Light:pixelsize=12:anitalias=true:hinting=true"
    -- font =         "xft:Input:style=Regular:pixelsize=13:anitalias=true:hinting=true"
-   , bgColor =      "#0a1b21" --"#08131b" --"#282828"--(Rich black fogra 29)"--"#0e061f(xicectic)" --"#202734(ayu mirage black)" --"#0a1b21(oxford/bluish-black)"
+   , bgColor =      "#0e061f" --"#08131b" --"#282828"--(Rich black fogra 29)"--"#0e061f(xicectic)" --"#202734(ayu mirage black)" --"#0a1b21(oxford/bluish-black)"
    , fgColor =      "#d49c19" --"#f9c74f(medium yellow)"--"#f34f2c(dark-darker orange)" --"#f48345(creamy orange)" --"#e6070b(medium red)" --"#ffecd1(cream)" --"#ff7d00(dark orange)"
    , position =     Top
-   , border =       BottomB
+   --, border =       BottomB
+   , border =       NoBorder
    , borderColor =  "#000000"--"#646464"
-   , alpha = 200  --for transparency
+   , alpha =  100 --200  --for transparency
 
    , sepChar =  "%"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   , template = " %multicpu% | %memory% | %dynnetwork% | %StdinReader% }{ %VECC% | %date% "
+   -- , template = " %multicpu% | %memory% | %dynnetwork% | %StdinReader% }{ %VECC% | %date% "
+   , template = " %multicpu% | %memory% | %dynnetwork% } %StdinReader% { %VECC% | %date% "
 
    -- general behavior
    , lowerOnStart =     False    -- send to bottom of window stack on start

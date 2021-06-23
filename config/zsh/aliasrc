@@ -1,0 +1,58 @@
+alias ls='exa -al --color=always --group-directories-first --icons'
+alias grep='grep --colour=auto'
+alias egrep='egrep --colour=auto'
+alias fgrep='fgrep --colour=auto'
+alias cp="cp -i"                          # confirm before overwriting something
+alias df='df -h'                          # human-readable sizes
+alias free='free -m'                      # show sizes in MB
+alias np='nano -w PKGBUILD'
+alias more=less
+# ================================= directories
+alias cdp="cd ~/PROGRAMMING/"
+alias cdpp="cd ~/PROGRAMMING/Projects/"
+alias cdpco="cd ~/PROGRAMMING/competitive"
+alias cdpc="cd ~/PROGRAMMING/C_family/c"
+alias cdpcp="cd ~/PROGRAMMING/C_family/CPP/"
+alias cdD="cd ~/Dotfiles-gitlab/"
+alias cdDpu="cd ~/Dotfiles-github_public"
+alias cdDp="cd ~/Dotfiles-github"
+alias nvjwk="nvim ~/JADAVPUR/WIKI/index.wiki"
+alias nvc="nvim ~/.config/nvim/init.vim"
+alias nvwk="nvim ~/vimwiki/index.wiki"
+# ================================= directories
+alias ..="cd ../"
+alias fm="vifm"
+alias nv="nvim"
+# alias cat="bat"
+alias pulm="pulsemixer"
+
+#
+# # ex - archive extractor
+# # usage: ex <file>
+ex ()
+{
+  if [ -f $1 ] ; then
+    case $1 in
+      *.tar.bz2)   tar xjf $1   ;;
+      *.tar.gz)    tar xzf $1   ;;
+      *.bz2)       bunzip2 $1   ;;
+      *.rar)       unrar x $1     ;;
+      *.gz)        gunzip $1    ;;
+      *.tar)       tar xf $1    ;;
+      *.tbz2)      tar xjf $1   ;;
+      *.tgz)       tar xzf $1   ;;
+      *.zip)       unzip $1     ;;
+      *.Z)         uncompress $1;;
+      *.7z)        7z x $1      ;;
+      *)           echo "'$1' cannot be extracted via ex()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+
+alias arcun="arc unarchive"
+alias git-list-f="git ls-tree -r master --name-only"
+alias git-list-fb="git ls-tree -r HEAD --name-only"
+alias git-list-all="git log --pretty=format: --name-only --diff-filter=A | sort - | sed '/^$/d'"

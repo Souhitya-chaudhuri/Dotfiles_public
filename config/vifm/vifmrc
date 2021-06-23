@@ -64,8 +64,11 @@ set norunexec
 
 " Selected color scheme
 
-colorscheme Palenight
+" colorscheme Palenight
 " colorscheme Zenburn
+" colorscheme Default-256
+" colorscheme Darkdesert
+colorscheme Ondedark
 
 " Format for displaying time in file list. For example:
 " TIME_STAMP_FORMAT=%m/%d-%H:%M
@@ -233,7 +236,7 @@ filetype *.[1-8] man ./%c
 fileviewer *.[1-8] man ./%c | col -b
 
 " Images
-filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm
+filextype *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm,*.tif,*.tiff
         \ {View in sxiv}
         \ sxiv %f &,
         \ {View in gpicview}
@@ -487,3 +490,5 @@ nnoremap <f8> :delete<cr>
 "     vifm --server-name "$VIFM_SERVER_NAME" --remote +"cd '$PWD'"
 "
 " let $VIFM_SERVER_NAME = v:servername
+
+source ~/.config/vifm/scripts/favicons.vifm

@@ -8,6 +8,7 @@ import XMonad.Util.SpawnOnce
 import XMonad.Util.Run
 import XMonad.Hooks.ManageDocks
 import XMonad.Layout.Spacing
+import XMonad.Layout.Spiral
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.Grid
 import XMonad.Hooks.ManageHelpers
@@ -26,18 +27,23 @@ myFocusFollowsMouse = True
 myClickJustFocuses :: Bool
 myClickJustFocuses = False
 
-myBorderWidth   = 2
+myBorderWidth   = 1
 
 myModMask       = mod4Mask --Always change the mod mask to 4
 
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 
 -- myNormalBorderColor  = "#250001"
-myFocusedBorderColor = "#ad2e0b"
-myNormalBorderColor  = "#10131a"
+-- myFocusedBorderColor = "#ad2e0b"
+-- myNormalBorderColor  = "#10131a"
 -- myFocusedBorderColor = "#e6f9e6"
 -- myFocusedBorderColor = "#99ffbb"
 -- myFocusedBorderColor = "#f9c74f"
+myNormalBorderColor = "#373c40"
+myFocusedBorderColor = "#36c692"
+
+screenshooter :: String
+screenshooter = "flameshot gui"
 
 ------------------------------------------------------------------------
 --
@@ -97,25 +103,33 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((mod1Mask .|. shiftMask,  xK_b     ), namedScratchpadAction myScratchPads "bashtop")
     , ((mod1Mask .|. shiftMask,  xK_v     ), namedScratchpadAction myScratchPads "vifm")
     , ((mod1Mask .|. shiftMask,  xK_c     ), namedScratchpadAction myScratchPads "tty-clock")
-    , ((mod1Mask .|. controlMask,  xK_v     ), namedScratchpadAction myScratchPads "volume")
+    , ((mod1Mask .|. controlMask,  xK_v   ), namedScratchpadAction myScratchPads "volume")
     , ((mod1Mask .|. shiftMask,  xK_s     ), namedScratchpadAction myScratchPads "Scratchpad")
-    -- launch deadbeef
-    , ((modm,               xK_d     ), spawn "deadbeef")
+    , ((mod1Mask,                xK_s     ), namedScratchpadAction myScratchPads "Terminal")
+    -- 2nd terminal
+    , ((mod1Mask .|. shiftMask, xK_Return ), spawn "st &")
     --launch browsers
     , ((modm .|. shiftMask, xK_f     ), spawn "firefox")
     , ((modm .|. mod1Mask,  xK_c     ), spawn "google-chrome-stable")
     -- launch pcmanfm
     , ((modm .|. shiftMask, xK_p     ), spawn "pcmanfm")
-    -- , ((modm .|. shiftMask, xK_p     ), namedScratchpadAction myScratchPads "terminal")
     -- launch dmenu
     --, ((modm,               xK_p     ), spawn "dmenu_run -c -l 20")
     --, ((modm,               xK_p     ), spawn "dmenu_run")
     , ((modm,               xK_p     ), spawn "dmenu_run -p \"Application: \"")
-    -- launch systemsettings5
-    , ((modm .|. mod1Mask,  xK_s     ), spawn "systemsettings5")
     -- launch yakuake
     , ((modm .|. mod1Mask,  xK_y     ), spawn "yakuake")
-
+    -- screenshot
+    , ((0,                  xK_Print ), spawn $ screenshooter)
+    , ((modm,               xK_Print ), spawn "flameshot full -p ~/Pictures/Screenshots")
+    -- launch systemsettings5
+    , ((modm .|. mod1Mask,  xK_s     ), spawn "systemsettings5")
+    ------------------------
+    --useless
+    --
+    -- launch deadbeef
+    -- , ((modm,               xK_d     ), spawn "deadbeef")
+    ------------------------
 
     -- Run xmessage with a summary of the default keybindings (useful for beginners)
     , ((modm .|. shiftMask, xK_slash ), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
@@ -162,9 +176,10 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 ------------------------------------------------------------------------
 -- Layouts:
 
-myLayout = spacingRaw True (Border 0 4 4 4) True (Border 5 4 4 4) True
+-- myLayout = spacingRaw True (Border 0 4 4 4) True (Border 5 4 4 4) True
+myLayout = smartSpacing 4
   $fullscreenFull
-  $avoidStruts(tiled ||| Full ||| Grid ||| Mirror tiled)
+  $avoidStruts(tiled ||| Full ||| Grid ||| spiral (6/7) ||| Mirror tiled)
   where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
@@ -186,9 +201,9 @@ myScratchPads = [ NS "bashtop" spawnBashTop findBashTop manageBashTop
                 , NS "tty-clock" spawnClock findClock manageClock
                 , NS "volume" spawnVolume findVolume manageVolume
                 , NS "Scratchpad" spawnScratchpad findScratchpad manageScratchpad
+                , NS "Terminal" spawnTerminal findTerminal manageTerminal
                 ]
   where
-    -- spawnTerm  = myTerminal2 ++ " -n scratchpad 'bash'"
     spawnBashTop  = myTerminal ++ " -t bashtop -e bashtop "
     findBashTop   = title =? "bashtop"
     manageBashTop = customFloating $ W.RationalRect x y w h
@@ -198,7 +213,8 @@ myScratchPads = [ NS "bashtop" spawnBashTop findBashTop manageBashTop
                  y = 0.95 -h
                  x = 0.95 -w
 
-    spawnScratchpad  = myTerminal2 ++ " -t Scratchpad -e nvim ~/scratchpad.txt "
+    -- spawnScratchpad  = myTerminal2 ++ " -t Scratchpad -e nvim ~/scratchpad.txt "
+    spawnScratchpad  = myTerminal ++ " -t Scratchpad -e sh -c \" sleep 0.1 && nvim ~/scratchpad.txt \""
     findScratchpad   = title =? "Scratchpad"
     manageScratchpad = customFloating $ W.RationalRect x y w h
                where
@@ -206,7 +222,8 @@ myScratchPads = [ NS "bashtop" spawnBashTop findBashTop manageBashTop
                  w = 0.9
                  y = 0.95 -h
                  x = 0.95 -w
-    spawnVifm  = myTerminal ++ " -t vifm -e vifm ~/ ~/JADAVPUR/ "
+
+    spawnVifm  = myTerminal ++ " -t vifm -e vifm ~/ ~/JADAVPUR/semester2/ "
     findVifm   = title =? "vifm"
     manageVifm = customFloating $ W.RationalRect x y w h
                where
@@ -214,6 +231,7 @@ myScratchPads = [ NS "bashtop" spawnBashTop findBashTop manageBashTop
                  w = 0.9
                  y = 0.95 -h
                  x = 0.95 -w
+
     spawnClock  = myTerminal ++ " -t clock -e tty-clock -scbtBC 3 "
     findClock   = title =? "clock"
     manageClock = customFloating $ W.RationalRect 0.25 0.25 0.5 0.5
@@ -221,6 +239,15 @@ myScratchPads = [ NS "bashtop" spawnBashTop findBashTop manageBashTop
     spawnVolume  = myTerminal ++ " -t volume -e pulsemixer "
     findVolume   = title =? "volume"
     manageVolume = customFloating $ W.RationalRect 0.25 0.25 0.5 0.5
+
+    spawnTerminal  = myTerminal ++ " -t terminal "
+    findTerminal   = title =? "terminal"
+    manageTerminal = customFloating $ W.RationalRect x y w h
+               where
+                 h = 0.9
+                 w = 0.9
+                 y = 0.95 -h
+                 x = 0.95 -w
 
 ------------------------------------------------------------------------
 -- Window rules:
@@ -236,9 +263,7 @@ myManageHook =composeAll
     , namedScratchpadManageHook myScratchPads
     , fullscreenManageHook
     , isFullscreen --> doFullFloat
-    , className =? "Gimp"           --> doFloat
     , className =? "yakuake"        --> doFloat
-    -- , className =? "libreoffice"    --> doFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
 

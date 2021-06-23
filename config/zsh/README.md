@@ -1,0 +1,5 @@
+- install zsh-autosuggestions
+- install [zsh-git-prompt](https://github.com/olivierverdier/zsh-git-prompt)
+- install zsh-history-substring-search
+- install zsh-syntax-highlighting
+- powerlevel10k
